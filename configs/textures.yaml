@@ -1,0 +1,28 @@
+# Local multi-family texture retrieval example; this is not a paper run.
+root: /Users/darktanuki/Dataset
+output: outputs
+task: retrieval
+families:
+  - texture_disk
+  - texture_cloud
+  - texture_wood
+  - texture_flake
+label_mode: family
+loss_name: spherejepa
+name_data: textures
+backbone_name: convnext_s
+in_channels: 1
+num_views: 2
+global_views: 2
+epochs: 50
+batch_size: 128
+num_workers: 0
+image_size: 224
+lr: 0.001
+weight_decay: 0.0005
+projection_dim: 256
+num_projections: 128
+knots: 51
+lambda_reg: 0.05
+seed: 42
+accelerator: auto

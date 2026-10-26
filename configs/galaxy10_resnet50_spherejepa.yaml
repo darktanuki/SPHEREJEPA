@@ -1,0 +1,23 @@
+# galaxy10 resnet50 spherejepa: 200-epoch comparison from the paper.
+task: pretrained
+root: data/galaxy10
+output: outputs
+name_data: galaxy10
+backbone_name: resnet50
+loss_name: spherejepa
+in_channels: 3
+image_size: 224
+num_views: 2
+global_views: 2
+epochs: 200
+batch_size: 256
+num_workers: 8
+online_probe: true
+lr: 0.05
+weight_decay: 0.0005
+projection_dim: 256
+num_projections: 1024
+knots: 151
+lambda_reg: 0.05
+seed: 0
+accelerator: auto

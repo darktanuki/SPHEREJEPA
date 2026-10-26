@@ -1,0 +1,10 @@
+__pycache__/
+.DS_Store
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+data/
+outputs/
+lightning_logs/
+*.ckpt

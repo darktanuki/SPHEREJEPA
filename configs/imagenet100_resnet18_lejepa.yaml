@@ -1,0 +1,24 @@
+# imagenet100 resnet18 lejepa: 200-epoch comparison from the paper.
+task: pretrained
+root: data/imagenet100
+output: outputs
+name_data: imagenet100
+backbone_name: resnet18
+loss_name: lejepa
+in_channels: 3
+image_size: 224
+num_views: 2
+global_views: 2
+epochs: 200
+batch_size: 256
+num_workers: 8
+online_probe: true
+lr: 0.05
+weight_decay: 0.0005
+projection_dim: 256
+num_projections: 1024
+knots: 51
+lambda_reg: 0.05
+seed: 0
+accelerator: auto
+source: hf

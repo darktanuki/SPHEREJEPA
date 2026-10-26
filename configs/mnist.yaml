@@ -1,0 +1,23 @@
+# Local MNIST example with online linear probing (fixed probe LR: 0.1).
+task: pretrained
+root: data
+output: outputs
+name_data: mnist
+backbone_name: small_cnn
+loss_name: spherejepa
+in_channels: 1
+num_views: 2
+global_views: 2
+epochs: 20
+batch_size: 128
+num_workers: 0
+image_size: 32
+online_probe: true
+lr: 0.001
+weight_decay: 0.0005
+projection_dim: 64
+num_projections: 128
+knots: 51
+lambda_reg: 0.05
+seed: 0
+accelerator: auto

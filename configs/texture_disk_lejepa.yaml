@@ -1,0 +1,25 @@
+# texture_disk paired-view retrieval with lejepa; evaluate with batch size 100.
+task: retrieval
+root: /Users/darktanuki/Dataset
+output: outputs
+name_data: texture_disk
+families:
+- texture_disk
+label_mode: family
+backbone_name: convnext_s
+loss_name: lejepa
+in_channels: 1
+image_size: 224
+num_views: 2
+global_views: 2
+epochs: 150
+batch_size: 100
+num_workers: 8
+lr: 0.0005
+weight_decay: 0.0005
+projection_dim: 256
+num_projections: 1024
+knots: 51
+lambda_reg: 0.05
+seed: 0
+accelerator: auto
