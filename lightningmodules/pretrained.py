@@ -98,7 +98,7 @@ class PretrainedModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx, mode="train"):
         loss, metrics = self.info_loss(batch, batch_idx, mode=mode)
-        self.log_dict(metrics, prog_bar=True, on_step=False, on_epoch=True, sync_dist=True)
+        self.log_dict(metrics, prog_bar=True, on_step=True, on_epoch=False, sync_dist=True)
         return loss
 
     def validation_step(self, batch, batch_idx, mode="val"):
