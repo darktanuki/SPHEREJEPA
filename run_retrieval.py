@@ -9,7 +9,9 @@ import yaml
 
 from dataloaders.textures import TexturesDataModule
 from lightningmodules.retrieval import RetrievalModule
-from run_utils import common_data_options, load_run_config, make_parameters, make_trainer
+from run_utils import (
+    common_data_options, load_run_config, make_parameters, make_trainer, select_cuda_gpu,
+)
 
 
 def main(argv=None):
@@ -21,6 +23,7 @@ def main(argv=None):
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--num-workers", type=int)
     parser.add_argument("--accelerator", choices=("auto", "cpu", "gpu", "mps"))
+    parser.add_argument("--devices", type=int, help="CUDA GPU index (0 is the first GPU)")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--smoke", action="store_true", help="One epoch, two train batches, one val/test batch")
     parser.add_argument("--checkpoint", type=Path, help="Resume training or load weights for --eval-only")
@@ -37,6 +40,12 @@ def main(argv=None):
             config[key] = argument
     if config["epochs"] < 1 or config["batch_size"] < 2 or config["num_workers"] < 0:
         parser.error("epochs must be >= 1, batch size >= 2, and workers >= 0")
+    gpu_index = args.devices if args.devices is not None else config.get("devices")
+    if gpu_index is not None:
+        try:
+            select_cuda_gpu(config, gpu_index)
+        except ValueError as exc:
+            parser.error(str(exc))
     if args.smoke:
         config["epochs"] = 1
         config["batch_size"] = 2

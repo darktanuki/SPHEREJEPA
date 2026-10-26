@@ -11,6 +11,8 @@ These YAML files map the experiments in [SPHERE-JEPA, Section 6 and Appendices C
 
 The ResNet and ViT-Tiny settings also follow `Retrieval/run_pretrain.py` and its ImageNet-100/Galaxy10 launch scripts. Texture training settings follow `Retrieval/run_train.py`. The paper specifies a 256-dimensional projection head, regularization weight 0.05, and 1024 random projections for the main comparisons. `knots: 151` for SPHERE-JEPA and `knots: 51` for LeJEPA follow the original loss constructors in `Retrieval`; the paper does not state these quadrature counts.
 
+On a CUDA machine, `--devices 1` or `devices: 1` selects GPU index 1. The runner passes `[1]` to Lightning so this is not interpreted as a count of GPUs.
+
 The YAML keys `name_data`, `backbone_name`, `loss_name`, `in_channels`, `projection_dim`, `online_probe`, `lr`, `weight_decay`, `lambda_reg`, `global_views`, `num_projections`, `knots`, and `seed` correspond to the classes in `parameters.py`. The remaining keys configure a DataModule or a Lightning Trainer. Run supported files with `python -m run_pretrained --config configs/<file>.yaml` or `python -m run_retrieval --config configs/<file>.yaml`. Both commands accept `--smoke` for a one-epoch, two-training-batch pipeline check and `--epochs 1` for a complete first epoch. Configs marked `reference_only`, if added, are rejected before model or dataset loading. To construct parameters directly in Python:
 
 ```python

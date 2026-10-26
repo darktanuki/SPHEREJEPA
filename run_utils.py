@@ -43,9 +43,25 @@ def common_data_options(config):
     return {key: config[key] for key in ("batch_size", "num_workers", "num_views", "seed")}
 
 
-def evaluation_device(accelerator):
+def select_cuda_gpu(config, index):
+    """Interpret --devices as one CUDA GPU index, not a device count."""
+    if isinstance(index, bool) or not isinstance(index, int):
+        raise ValueError("GPU index must be an integer.")
+    if index < 0:
+        raise ValueError("GPU index must be >= 0.")
+    if config.get("accelerator", "auto") not in ("auto", "gpu"):
+        raise ValueError("--devices selects a CUDA GPU and requires accelerator 'auto' or 'gpu'.")
+    count = torch.cuda.device_count()
+    if not torch.cuda.is_available() or index >= count:
+        raise ValueError(f"CUDA GPU {index} is unavailable; PyTorch sees {count} CUDA GPU(s).")
+    config["accelerator"] = "gpu"
+    config["devices"] = [index]
+
+
+def evaluation_device(accelerator, devices=None):
     if accelerator in ("auto", "gpu") and torch.cuda.is_available():
-        return torch.device("cuda")
+        index = devices[0] if isinstance(devices, list) else 0
+        return torch.device(f"cuda:{index}")
     if accelerator in ("auto", "mps") and torch.backends.mps.is_available():
         return torch.device("mps")
     if accelerator in ("gpu", "mps"):

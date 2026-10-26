@@ -13,7 +13,8 @@ from dataloaders.mnist import MNISTDataModule
 from evaluation import evaluate_classification
 from lightningmodules.pretrained import PretrainedModule
 from run_utils import (
-    common_data_options, evaluation_device, load_run_config, make_parameters, make_trainer,
+    common_data_options, evaluation_device, load_run_config, make_parameters,
+    make_trainer, select_cuda_gpu,
 )
 
 
@@ -41,6 +42,7 @@ def main(argv=None):
     parser.add_argument("--batch-size", type=int)
     parser.add_argument("--num-workers", type=int)
     parser.add_argument("--accelerator", choices=("auto", "cpu", "gpu", "mps"))
+    parser.add_argument("--devices", type=int, help="CUDA GPU index (0 is the first GPU)")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--linear-epochs", type=int, help="Frozen linear-probe epochs (default: 90)")
     parser.add_argument("--knn-k", type=int, help="Number of k-NN neighbors (default: 20)")
@@ -61,6 +63,12 @@ def main(argv=None):
             config[key] = argument
     if config["epochs"] < 1 or config["batch_size"] < 2 or config["num_workers"] < 0:
         parser.error("epochs must be >= 1, batch size >= 2, and workers >= 0")
+    gpu_index = args.devices if args.devices is not None else config.get("devices")
+    if gpu_index is not None:
+        try:
+            select_cuda_gpu(config, gpu_index)
+        except ValueError as exc:
+            parser.error(str(exc))
     if config.get("linear_probe_epochs", 90) < 1 or config.get("knn_k", 20) < 1:
         parser.error("linear-probe epochs and k-NN neighbors must be positive")
     if args.smoke:
@@ -79,7 +87,7 @@ def main(argv=None):
     if args.eval_only:
         checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
         model.load_state_dict(checkpoint["state_dict"])
-        model.to(evaluation_device(config.get("accelerator", "auto"))).eval()
+        model.to(evaluation_device(config.get("accelerator", "auto"), config.get("devices"))).eval()
     else:
         trainer = make_trainer(config, run_dir, smoke=args.smoke)
         trainer.fit(model, datamodule=data, ckpt_path=str(args.checkpoint) if args.checkpoint else None)
